@@ -1,0 +1,22 @@
+[Unit]
+Description=My Website
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+KillMode=none
+Restart=on-failure
+RestartSec=5s
+
+Environment=CONTAINER=%p
+Environment=DOCKER_IMAGE=%p
+Environment=DOCKER_NAMESPACE_IMAGES=jairovm
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/usr/bin/docker pull ${DOCKER_NAMESPACE_IMAGES}/${DOCKER_IMAGE}
+ExecStart=/usr/bin/docker run --name ${CONTAINER} -p 80:80 ${DOCKER_NAMESPACE_IMAGES}/${DOCKER_IMAGE}
+
+[Install]
+WantedBy=multi-user.target
